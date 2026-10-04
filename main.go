@@ -17,7 +17,6 @@ import (
 func main(){
 
 	my_interfaces, err := net.Interfaces() // this seems to be a slice
-	fmt.Printf("Type of interface is : %T\n", my_interfaces)
 	if err != nil {
 		log.Fatal("could not gather interfaces")
 	}
