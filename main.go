@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os/exec"
-	"strings"
-	"runtime"
 )
 
 // type Interface struct {
@@ -18,8 +15,6 @@ import (
 // }
 
 func main(){
-	var GreenText = "\033[32m"
-	var ResetText = "\033[0m"
 
 	my_interfaces, err := net.Interfaces() // this seems to be a slice
 	if err != nil {
@@ -37,24 +32,6 @@ func main(){
 		fmt.Println("MTU:", iface.MTU)
 		fmt.Print("\n")
 	}
-
-	// let's find the default interface with a little hack if on macOS
-	if runtime.GOOS == "darwin"{
-		fmt.Println(GreenText + "Current runtime is MacOS" + ResetText)
-		cmd := exec.Command("sh", "-c", "route -n get default")
-		out, err := cmd.Output()
-		if err != nil {
-			fmt.Printf("Error: %v\n", err)
-		}else{
-			parsedOut := string(out)
-			parsedLines := strings.Split(parsedOut, "\n")
-			var defaultInterface string;
-			for _, line := range parsedLines {
-				if strings.Contains(line, "interface:"){
-					defaultInterface = strings.Trim(line, " ")
-				}
-			}
-			fmt.Printf("%v The default interface is %v%v\n", GreenText, defaultInterface, ResetText)
-		}
-	}
+	// getting default interface
+	getRuntime()	
 }
