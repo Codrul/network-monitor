@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 	"os"
+	"fmt"
 )
 
 /*
@@ -39,9 +40,9 @@ func main(){
 				break monitor
 
 			default:
-				bytesReceived := calculateBytesReceived(defaultInterface)
-				log.Printf("%v bytes received\n", bytesReceived)
-			}
+				bytesPerSecond := calculateBytesReceived(defaultInterface)
+				mbps := (bytesPerSecond * 8) / 1_000_000
+				fmt.Printf("\rRX: %.2f MB/s (%.2f Mbps)\033[K", bytesPerSecond/1_000_000, mbps)		}
 		}
 	// clear flags
 	program_duration := time.Since(start)
