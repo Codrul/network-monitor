@@ -1,56 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net"
+	"time"
 )
 
-// type Interface struct {
-// 	Index        int          // positive integer that starts at one, zero is never used
-// 	MTU          int          // maximum transmission unit
-// 	Name         string       // e.g., "en0", "lo0", "eth0.100"
-// 	HardwareAddr HardwareAddr // IEEE MAC-48, EUI-48 and EUI-64 form
-// 	Flags        Flags        // e.g., FlagUp, FlagLoopback, FlagMulticast
-// }
+/*
+Metrics we need to track:
+1. Bytes received/sent
+2. Packets received/sent
+3. Errors
+4. Dropped packets
+*/
 
 func main(){
 
-	my_interfaces, err := net.Interfaces() // this seems to be a slice
+	start := time.Now()
+
+	log.SetFlags(log.LstdFlags | log.Ltime, )
+	log.SetPrefix(GreenText)
+
+	defaultInterface, err := getDefaultInterfaceStruct()
 	if err != nil {
-		log.Fatal("could not gather interfaces")
+		log.Panic("Error I guess")
 	}
+	log.Printf("%v", defaultInterface.Name)
 
-	numInterfaces := 0
-
-	defaultInterfaceName := getDefaultInterfaceName()	
-	var defaultInterface net.Interface;
-
-	for _, iface := range my_interfaces {
-		defaultAddress, _ := iface.Addrs()	
-		if iface.Name == defaultInterfaceName {
-			fmt.Println("Name:", iface.Name)
-			fmt.Println("Index:", iface.Index)
-			fmt.Println("Hardware Address:", iface.HardwareAddr)
-			fmt.Println("Network Address:", defaultAddress)
-			fmt.Println("Flags:", iface.Flags)
-			fmt.Println("MTU:", iface.MTU)
-			fmt.Print("\n")
-			defaultInterface = iface
-		}
-		numInterfaces += 1
-	}
-
-	fmt.Printf(GreenText + "%v interfaces found\n" + ResetText, numInterfaces)
-
-	// let's get the addresses
-	addresses, err := defaultInterface.Addrs()
-	if err != nil {
-		fmt.Printf("%vAn error happened: %v%v", RedText, err, ResetText)
-	}
-	for _, address := range addresses {
-		fmt.Printf("%vDefault interface address: %v%v\n", GreenText, address, ResetText)
-	}
-
+	program_duration := time.Since(start)
+	log.Printf("Program ended after %v", program_duration)
 
 }

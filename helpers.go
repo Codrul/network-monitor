@@ -1,10 +1,11 @@
 package main
 
-import ( 
-	"runtime"
+import (
+	"log"
+	"net"
 	"os/exec"
+	"runtime"
 	"strings"
-	"fmt"
 )
 
 var GreenText = "\033[32m"
@@ -16,11 +17,11 @@ func getDefaultInterfaceName() string {
 	// let's find the default interface with a little hack depending on runtime
 	switch os := runtime.GOOS; os {
 		case "darwin":
-			fmt.Println(GreenText + "Current runtime is MacOS" + ResetText)
+			log.Println(GreenText + "Current runtime is MacOS" + ResetText)
 			cmd := exec.Command("sh", "-c", "route -n get default")
 			out, err := cmd.Output()
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				log.Printf("Error: %v\n", err)
 			}
 			parsedOut := string(out)
 			parsedLines := strings.Split(parsedOut, "\n")
@@ -31,20 +32,59 @@ func getDefaultInterfaceName() string {
 				}
 			}
 			defaultInterfaceName := strings.TrimSpace(strings.Trim(defaultInterface, "interface:"))
-			fmt.Printf("%vThe default interface is %v%v\n", GreenText, defaultInterfaceName, ResetText)
+			log.Printf("%vThe default interface is %v%v\n", GreenText, defaultInterfaceName, ResetText)
 			return defaultInterfaceName
 
 		case "linux":
-			fmt.Println(GreenText + "Current runtime is Linux" + ResetText)
+			log.Println(GreenText + "Current runtime is Linux" + ResetText)
 			cmd := exec.Command("sh", "-c", "ip route show default")
 			out, err := cmd.Output()
 			if err != nil {
-				fmt.Printf("Error: %v\n", err)
+				log.Printf("Error: %v\n", err)
 			}
 			defaultInterface := string(out)	
-			fmt.Printf("%vThe default interface is %v%v\n", GreenText, string(out), ResetText)
+			log.Printf("%vThe default interface is %v%v\n", GreenText, string(out), ResetText)
 			return defaultInterface
 		}
 		_:
 			return ""
+}
+
+func getDefaultInterfaceStruct() (net.Interface, error) {
+
+	my_interfaces, err := net.Interfaces() // this seems to be a slice
+	if err != nil {
+		log.Fatal("could not gather interfaces")
+		return net.Interface{}, err
+	}
+
+	numInterfaces := 0
+
+	defaultInterfaceName := getDefaultInterfaceName()	
+	var defaultInterface net.Interface;
+
+	for _, iface := range my_interfaces {
+		defaultAddress, _ := iface.Addrs()	
+		if iface.Name == defaultInterfaceName {
+			log.Println("Name:", iface.Name)
+			log.Println("Index:", iface.Index)
+			log.Println("Hardware Address:", iface.HardwareAddr)
+			log.Println("Network Address:", defaultAddress)
+			log.Println("Flags:", iface.Flags)
+			log.Println("MTU:", iface.MTU)
+			defaultInterface = iface
+		}
+		numInterfaces += 1
+	}
+	log.Printf(GreenText + "%v interfaces found\n" + ResetText, numInterfaces)
+	// let's get the addresses
+	addresses, err := defaultInterface.Addrs()
+	if err != nil {
+		log.Printf("%vAn error happened: %v%v", RedText, err, ResetText)
+	}
+	for _, address := range addresses {
+		log.Printf("%vDefault interface address: %v%v\n", GreenText, address, ResetText)
+	}
+
+	return defaultInterface, nil
 }
