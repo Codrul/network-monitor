@@ -12,6 +12,8 @@ var GreenText = "\033[32m"
 var RedText = "\033[31m"
 var ResetText = "\033[0m"
 
+
+// I should have used gopsutil before doing all this but at least it was good exercise lol
 func getDefaultInterfaceName() string {
 	
 	// let's find the default interface with a little hack depending on runtime

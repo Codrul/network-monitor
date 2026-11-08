@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"time"
-	"fmt"
+	"os/signal"
+	"syscall"
+	"os"
 )
 
 /*
@@ -19,17 +21,31 @@ func main(){
 	start := time.Now()
 
 	log.SetFlags(log.LstdFlags) // this crazy thing takes bitwise OR for arguments so add | for more args
-	fmt.Printf("%v is the SetFlags argument", log.LstdFlags | log.Ltime)
 	log.SetPrefix(GreenText)
 
 	defaultInterface, err := getDefaultInterfaceStruct()
 	if err != nil {
 		log.Panic("Error I guess")
 	}
-	log.Printf("%v", defaultInterface.Name)
+	// listen to ctrl + c to exit the loop while dev testing
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	program_duration := time.Since(start)
+	for {
+		select {
+		case <-sigChan:
+			log.Println("Shutdown signal received...")
+			goto shutdown
+
+		default:
+			bytesReceived := calculateBytesReceived(defaultInterface)
+      log.Printf("%v bytes received\n", bytesReceived)
+		}
+	}
+
+	shutdown:
 	// clear flags
+	program_duration := time.Since(start)
 	log.SetFlags(0)
-	log.Printf("Program ended after %v", program_duration)
+	log.Printf("Program ended after %v\n", program_duration)
 }
