@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"time"
+	"fmt"
 )
 
 /*
@@ -17,7 +18,8 @@ func main(){
 
 	start := time.Now()
 
-	log.SetFlags(log.LstdFlags | log.Ltime, )
+	log.SetFlags(log.LstdFlags) // this crazy thing takes bitwise OR for arguments so add | for more args
+	fmt.Printf("%v is the SetFlags argument", log.LstdFlags | log.Ltime)
 	log.SetPrefix(GreenText)
 
 	defaultInterface, err := getDefaultInterfaceStruct()
