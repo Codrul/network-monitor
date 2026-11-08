@@ -27,6 +27,7 @@ func main(){
 	log.Printf("%v", defaultInterface.Name)
 
 	program_duration := time.Since(start)
+	// clear flags
+	log.SetFlags(0)
 	log.Printf("Program ended after %v", program_duration)
-
 }
