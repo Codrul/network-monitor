@@ -21,17 +21,36 @@ func main(){
 		log.Fatal("could not gather interfaces")
 	}
 
-  // why can't I loop over each item?
+	numInterfaces := 0
+
+	defaultInterfaceName := getDefaultInterfaceName()	
+	var defaultInterface net.Interface;
+
 	for _, iface := range my_interfaces {
 		defaultAddress, _ := iface.Addrs()	
-		fmt.Println("Name:", iface.Name)
-		fmt.Println("Index:", iface.Index)
-		fmt.Println("Hardware Address:", iface.HardwareAddr)
-		fmt.Println("Network Address:", defaultAddress)
-		fmt.Println("Flags:", iface.Flags)
-		fmt.Println("MTU:", iface.MTU)
-		fmt.Print("\n")
+		if iface.Name == defaultInterfaceName {
+			fmt.Println("Name:", iface.Name)
+			fmt.Println("Index:", iface.Index)
+			fmt.Println("Hardware Address:", iface.HardwareAddr)
+			fmt.Println("Network Address:", defaultAddress)
+			fmt.Println("Flags:", iface.Flags)
+			fmt.Println("MTU:", iface.MTU)
+			fmt.Print("\n")
+			defaultInterface = iface
+		}
+		numInterfaces += 1
 	}
-	// getting default interface
-	getRuntime()	
+
+	fmt.Printf(GreenText + "%v interfaces found\n" + ResetText, numInterfaces)
+
+	// let's get the addresses
+	addresses, err := defaultInterface.Addrs()
+	if err != nil {
+		fmt.Printf("%vAn error happened: %v%v", RedText, err, ResetText)
+	}
+	for _, address := range addresses {
+		fmt.Printf("%vDefault interface address: %v%v\n", GreenText, address, ResetText)
+	}
+
+
 }

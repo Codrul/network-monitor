@@ -8,11 +8,12 @@ import (
 )
 
 var GreenText = "\033[32m"
+var RedText = "\033[31m"
 var ResetText = "\033[0m"
 
-func getRuntime() {
+func getDefaultInterfaceName() string {
 	
-	// let's find the default interface with a little hack if on macOS
+	// let's find the default interface with a little hack depending on runtime
 	switch os := runtime.GOOS; os {
 		case "darwin":
 			fmt.Println(GreenText + "Current runtime is MacOS" + ResetText)
@@ -29,7 +30,9 @@ func getRuntime() {
 					defaultInterface = strings.Trim(line, " ")
 				}
 			}
-			fmt.Printf("%v The default interface is %v%v\n", GreenText, defaultInterface, ResetText)
+			defaultInterfaceName := strings.TrimSpace(strings.Trim(defaultInterface, "interface:"))
+			fmt.Printf("%vThe default interface is %v%v\n", GreenText, defaultInterfaceName, ResetText)
+			return defaultInterfaceName
 
 		case "linux":
 			fmt.Println(GreenText + "Current runtime is Linux" + ResetText)
@@ -38,7 +41,10 @@ func getRuntime() {
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 			}
+			defaultInterface := string(out)	
 			fmt.Printf("%vThe default interface is %v%v\n", GreenText, string(out), ResetText)
-
+			return defaultInterface
 		}
+		_:
+			return ""
 }
