@@ -18,7 +18,6 @@ func calculateBytesReceived(iface net.Interface) float64 {
 	bytesReceivedStart := 0.0
 	for _, stat := range stats {
 			if stat.Name == iface.Name {
-					log.Printf("Received: %v", stat.BytesRecv)
 					bytesReceivedStart += float64(stat.BytesRecv)
 			}
 	}
@@ -28,7 +27,6 @@ func calculateBytesReceived(iface net.Interface) float64 {
 	stats, err = gnet.IOCounters(true)
 	for _, stat := range stats {
 			if stat.Name == iface.Name {
-					log.Printf("Received: %v\n", stat.BytesRecv)
 					bytesReceivedEnd += float64(stat.BytesRecv)
 			}
 	}

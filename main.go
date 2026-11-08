@@ -31,19 +31,18 @@ func main(){
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	for {
-		select {
-		case <-sigChan:
-			log.Println("Shutdown signal received...")
-			goto shutdown
+	monitor: // yes apparently we can name fucking loops in go lang
+		for {
+			select {
+			case <-sigChan:
+				log.Println("Shutdown signal received...")
+				break monitor
 
-		default:
-			bytesReceived := calculateBytesReceived(defaultInterface)
-      log.Printf("%v bytes received\n", bytesReceived)
+			default:
+				bytesReceived := calculateBytesReceived(defaultInterface)
+				log.Printf("%v bytes received\n", bytesReceived)
+			}
 		}
-	}
-
-	shutdown:
 	// clear flags
 	program_duration := time.Since(start)
 	log.SetFlags(0)
