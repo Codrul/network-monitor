@@ -11,10 +11,13 @@ import (
 
 /*
 Metrics we need to track:
-1. Bytes received/sent
-2. Packets received/sent
+1. Bytes received/sent 											| Got this part down
+2. Packets received/sent and packet size    | Can use the same IOCounters struct.
 3. Errors
 4. Dropped packets
+5. Latency																	| can use ping and then parse
+
+Packet size can be (Bytes received / Packets received)
 */
 
 func main(){
@@ -24,10 +27,8 @@ func main(){
 	log.SetFlags(log.LstdFlags) // this crazy thing takes bitwise OR for arguments so add | for more args
 	log.SetPrefix(GreenText)
 
-	defaultInterface, err := getDefaultInterfaceStruct()
-	if err != nil {
-		log.Panic("Error I guess")
-	}
+	defaultInterface := getDefaultInterfaceName()
+
 	// listen to ctrl + c to exit the loop while dev testing
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)

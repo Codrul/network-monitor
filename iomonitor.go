@@ -3,12 +3,11 @@ package main
 import (
 	"log"
 	"time"
-	"net"
 
 	gnet "github.com/shirou/gopsutil/v4/net" // to avoid conflicts with std package net
 )
 
-func calculateBytesReceived(iface net.Interface) float64 {
+func calculateBytesReceived(ifaceName string) float64 {
 
 	stats, err := gnet.IOCounters(true)
 	if err != nil {
@@ -17,7 +16,7 @@ func calculateBytesReceived(iface net.Interface) float64 {
 
 	bytesReceivedStart := 0.0
 	for _, stat := range stats {
-			if stat.Name == iface.Name {
+			if stat.Name == ifaceName {
 					bytesReceivedStart += float64(stat.BytesRecv)
 			}
 	}
@@ -26,7 +25,7 @@ func calculateBytesReceived(iface net.Interface) float64 {
 	time.Sleep(time.Second)
 	stats, err = gnet.IOCounters(true)
 	for _, stat := range stats {
-			if stat.Name == iface.Name {
+			if stat.Name == ifaceName {
 					bytesReceivedEnd += float64(stat.BytesRecv)
 			}
 	}
